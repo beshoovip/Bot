@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#111"><canvas id="c"></canvas>
+<script type="module">
+import { getDefaultWorld } from '/shared/maps/world.js';
+import { buildScenery, worldBounds } from '/client/src/game/render/geometry.js';
+import { paintWholeWorld } from '/client/src/game/render/isoPainter.js';
+const w = getDefaultWorld(); const b = worldBounds(w);
+const c = document.getElementById('c'); const s = 0.5;
+c.width = Math.ceil(b.w*s); c.height = Math.ceil(b.h*s);
+const ctx = c.getContext('2d'); ctx.translate(-b.x*s, 0);
+paintWholeWorld(ctx, w, buildScenery(w), s);
+window.DONE = true;
+</script>

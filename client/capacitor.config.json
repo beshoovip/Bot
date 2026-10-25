@@ -1,0 +1,8 @@
+{
+  "appId": "com.caravanroad.game",
+  "appName": "طريق القوافل",
+  "webDir": "dist",
+  "backgroundColor": "#14110d",
+  "server": { "androidScheme": "https" },
+  "android": { "allowMixedContent": false }
+}

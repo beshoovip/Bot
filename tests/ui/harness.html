@@ -1,0 +1,25 @@
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/client/src/ui/styles.css"><body><div id="game"></div><div id="ui"></div>
+<script type="module">
+import { getDefaultWorld } from '/shared/maps/world.js';
+import { GameState } from '/client/src/game/state.js';
+import { InputController } from '/client/src/game/input.js';
+import { Emitter } from '/client/src/network/net.js';
+import { createHud } from '/client/src/ui/hud.js';
+import { createScreens } from '/client/src/ui/screens.js';
+const world = getDefaultWorld();
+const state = new GameState();
+const sent = []; const requests = [];
+class FakeNet extends Emitter { status='online'; rtt=42; send(ev,p,cb){ sent.push([ev,p]); this.onSend?.(ev,p,cb); return true; } request(ev,p){ requests.push([ev,p]); return Promise.resolve(this.reply?.(ev,p) ?? {ok:true}); } }
+const net = new FakeNet();
+const input = new InputController({ send: (ev, p) => (sent.push([ev,p]), true), now: () => 0 });
+const self = { id:1,name:'<img src=x onerror=window.XSS=1>',profession:'trader',level:3,xp:50,xpNext:200,hp:80,maxHp:110,atk:8,def:6,gold:500,repTrade:0,repBlack:0,skills:{caravan_shield:1,field_repair:1},skillPoints:2,quests:{q_first_delivery:{progress:1,status:'completed'}},hostile:false,dead:false,respawnIn:0,cooldowns:{}};
+state.onJoined({ self, inventory:[{itemId:'wheat',qty:5,equipped:false},{itemId:'rusty_sword',qty:1,equipped:true},{itemId:'health_potion',qty:2,equipped:false}], chat:[{name:'<b>x</b>',text:'<script>window.XSS2=1<\/script>'}], zone:'dawn_city' });
+state.applySnapshot({ t:1, ack:0, you:{x:19.5,y:23,hp:80,maxHp:110,dead:false,zone:'dawn_city',rooted:false}, players:[], monsters:[], caravans:[], drops:[{id:9,x:19.5,y:23.5,items:{}}], traps:[] });
+const settings = { joystickSize:1, buttonSize:1, joystickSensitivity:1, sound:true, leftHanded:false };
+let saved = null;
+const hud = createHud(document.getElementById('ui'), { state, world, net, input, settings, onSettings: (s)=>{ saved = {...s}; }, onLogout: ()=>{ window.LOGOUT = true; } });
+hud.update();
+window.T = { world, state, net, input, hud, sent, requests, settings, get saved(){ return saved; }, createScreens, Emitter };
+window.READY = true;
+</script>

@@ -1,0 +1,25 @@
+name: Generate lockfiles
+# يُشغَّل يدويًا مرة واحدة (أو عند تغيير الاعتماديات) لإنشاء package-lock.json للخادم والعميل وإيداعه في المستودع،
+# لأن الأوامر المحلية غير متاحة عند العمل من الجوال فقط.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          (cd server && npm install --package-lock-only)
+          (cd client && npm install --package-lock-only)
+      - name: Commit lockfiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server/package-lock.json client/package-lock.json
+          git diff --cached --quiet || git commit -m "chore: add lockfiles"
+          git push

@@ -1,0 +1,20 @@
+# Blueprint اختياري لـ Render. قاعدة البيانات لا تُنشأ هنا (Neon المجانية لا تنتهي؛ Postgres المجانية على Render تنتهي بعد 30 يومًا).
+services:
+  - type: web
+    name: caravan-road-server
+    runtime: node
+    plan: free
+    buildCommand: cd server && (if [ -f package-lock.json ]; then npm ci; else npm install; fi)
+    startCommand: node server/src/index.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22
+      - key: TRUST_PROXY
+        value: 'true'
+      - key: CORS_ORIGINS
+        value: https://localhost,capacitor://localhost
+      - key: DATABASE_URL
+        sync: false
